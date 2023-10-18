@@ -1,32 +1,21 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
-const versionString =
-  import.meta.env.MODE === 'development'
-    ? import.meta.env.VITE_APP_VERSION + '-dev'
-    : import.meta.env.VITE_APP_VERSION
-
-export const useStore = defineStore('main', {
+export const useStore = defineStore("main", {
   state: () => ({
-    debug: import.meta.env.MODE === 'development',
-    version: versionString,
+    debug: import.meta.env.MODE === "development",
     isInitialized: false,
-    count: 0,
   }),
 
   actions: {
     initApp() {
-      this.isInitialized = true
-      console.log('app initialized!')
-    },
-
-    increment(value = 1) {
-      this.count += value
+      this.isInitialized = true;
+      console.log("app initialized!");
     },
   },
 
   getters: {
     isReady: (state) => {
-      return !state.isInitialized
+      return !state.isInitialized;
     },
   },
-})
+});
