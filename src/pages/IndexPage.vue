@@ -17,14 +17,25 @@ useHead({
   ],
 });
 
-const array = createArray(30);
+const arrayLength = ref(10);
+const array = ref(createArray(arrayLength.value));
+
+const setupArray = () => {
+  array.value = createArray(arrayLength.value);
+};
+
+watch(arrayLength, setupArray);
 </script>
 
 <template>
-  <section class="relative py-8 min-h-full h-[100vh] bg-slate-800">
-    <Vueform>
-      <TextElement name="hello_world" label="Hello" placeholder="World" />
-    </Vueform>
-    <Array :array="array" />
+  <section class="relative p-4 min-h-full h-[100vh] bg-slate-800">
+    <div class="container mx-auto">
+      <div class="text-xl text-white mb-4">
+        Количество элементов
+        <ElSlider v-model="arrayLength" :min="10" :max="100" showInput />
+        <ElButton @click="setupArray"> Сброс значений </ElButton>
+      </div>
+      <Array :array="array" />
+    </div>
   </section>
 </template>

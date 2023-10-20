@@ -16,11 +16,25 @@ const BAR_WIDTH = computed(
     ref="arrayContainer"
     class="array px-10 w-full flex gap-0.5 justify-center items-end"
   >
-    <BarItem
-      v-for="item in array"
-      :key="item.id"
-      :height="item.value"
-      :width="BAR_WIDTH"
-    />
+    <TransitionGroup name="array">
+      <BarItem
+        v-for="item in array"
+        :key="item.id"
+        :height="item.value"
+        :width="BAR_WIDTH"
+      />
+    </TransitionGroup>
   </div>
 </template>
+
+<style scoped>
+.array-enter-active,
+.array-leave-active {
+  transition: all 0.5s ease;
+}
+.array-enter-from,
+.array-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+</style>

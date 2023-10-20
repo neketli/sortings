@@ -9,7 +9,7 @@ const { height, width } = toRefs(props);
 
 <template>
   <div
-    class="bg-green-300 bar-item"
+    class="bg-green-400 bar-item hover:bg-opacity-90"
     :style="{ width: `${width}px`, height: `${height}px` }"
   />
 </template>
