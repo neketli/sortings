@@ -3,7 +3,7 @@ const randomIntFromInterval = (min: number, max: number) => {
 };
 
 export const createArray = (arrayLength: number) => {
-  const array = new Array(arrayLength + 1).fill(0);
+  const array = new Array(arrayLength).fill(0);
 
   return array.map((_, idx) => ({
     id: idx,

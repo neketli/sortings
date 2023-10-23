@@ -2,14 +2,16 @@
 const props = defineProps<{
   height: number;
   width: number;
+  color?: string;
 }>();
 
-const { height, width } = toRefs(props);
+const { height, width, color } = toRefs(props);
 </script>
 
 <template>
   <div
-    class="bg-green-400 bar-item hover:bg-opacity-90"
+    class="bar-item hover:bg-opacity-90"
+    :class="[`bg-${color}`]"
     :style="{ width: `${width}px`, height: `${height}px` }"
   />
 </template>

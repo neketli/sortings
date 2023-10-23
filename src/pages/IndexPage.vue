@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { createArray } from "@/utils";
+import { useMainStore } from "@/store/main";
+import { useSortingsStore } from "@/store/sortings";
 
 const route = useRoute();
+const store = useMainStore();
+const sortings = useSortingsStore();
 
 useHead({
   title: route.meta.title,
@@ -17,25 +20,35 @@ useHead({
   ],
 });
 
-const arrayLength = ref(10);
-const array = ref(createArray(arrayLength.value));
+const length = ref(store.length);
 
-const setupArray = () => {
-  array.value = createArray(arrayLength.value);
+const bubbleSort = () => {
+  sortings.bubbleSort(store.array, length.value);
+
+  console.log(store.array);
 };
 
-watch(arrayLength, setupArray);
+watch(length, store.setupLength);
+
+onMounted(() => {
+  store.setupArray();
+});
 </script>
 
 <template>
   <section class="relative p-4 min-h-full h-[100vh] bg-slate-800">
     <div class="container mx-auto">
-      <div class="text-xl text-white mb-4">
+      <div class="flex flex-col gap-2 text-xl text-white mb-4">
         Количество элементов
-        <ElSlider v-model="arrayLength" :min="10" :max="100" showInput />
-        <ElButton @click="setupArray"> Сброс значений </ElButton>
+        <ElSlider v-model="length" :min="10" :max="100" show-input />
+        <div class="flex gap-4 justify-between">
+          <ElButton @click="store.setupArray"> Сброс значений </ElButton>
+          <div class="flex gap-2">
+            <ElButton @click="bubbleSort"> Сортировка пузырьком </ElButton>
+          </div>
+        </div>
       </div>
-      <Array :array="array" />
+      <Array :array="store.array" />
     </div>
   </section>
 </template>

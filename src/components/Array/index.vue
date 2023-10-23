@@ -1,10 +1,36 @@
 <script setup lang="ts">
+import { useSortingsStore } from "@/store/sortings";
+import { ArrayItem } from "@/types";
+
 const props = defineProps<{
   array: { id: number; value: number }[];
 }>();
 
 const { array } = toRefs(props);
 const arrayContainer: Ref<HTMLDivElement | undefined> = ref();
+
+const store = useSortingsStore();
+
+const sortedElements = computed(() => store.sortedElements);
+const activeElements = computed(() => store.activeElements);
+const additionalElements = computed(() => store.additionalElements);
+
+const getColor = ({ id }: ArrayItem) => {
+  const colors = {
+    active: "orange-400",
+    sorted: "green-400",
+    additional: "red-400",
+    default: "green-200",
+  };
+
+  const status =
+    (sortedElements.value.includes(id) && "sorted") ||
+    (activeElements.value.includes(id) && "active") ||
+    (additionalElements.value.includes(id) && "additional") ||
+    "default";
+
+  return colors[status];
+};
 
 const BAR_WIDTH = computed(
   () => (arrayContainer.value?.clientWidth || 100) / array.value.length
@@ -19,9 +45,10 @@ const BAR_WIDTH = computed(
     <TransitionGroup name="array">
       <BarItem
         v-for="item in array"
-        :key="item.id"
+        :key="item.value"
         :height="item.value"
         :width="BAR_WIDTH"
+        :color="getColor(item)"
       />
     </TransitionGroup>
   </div>
