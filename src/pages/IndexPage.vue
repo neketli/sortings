@@ -45,8 +45,12 @@ onMounted(() => {
   <section class="relative p-4 min-h-full h-[100vh] bg-slate-800">
     <div class="container mx-auto">
       <div class="flex flex-col gap-2 text-xl text-white mb-4">
-        Количество элементов
-        <ElSlider v-model="length" :min="10" :max="100" show-input />
+        <div class="flex gap-4">
+          Количество элементов
+          <ElSlider v-model="length" :min="10" :max="100" show-input />
+          Скорость анимации
+          <ElSlider v-model="store.speed" :min="1" :max="100" show-input />
+        </div>
         <div class="flex gap-4 justify-between">
           <ElButton @click="reset"> Сброс значений </ElButton>
           <div class="flex gap-2">

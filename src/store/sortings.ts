@@ -6,7 +6,7 @@ export const useSortingsStore = defineStore("soritngs", {
   state: () => ({
     isPaused: false,
     isActive: false,
-    sortingSpeed: 1,
+    pause: null as Promise<void> | null,
     activeElements: [] as number[],
     sortedElements: [] as number[],
     additionalElements: [] as number[],
@@ -14,46 +14,42 @@ export const useSortingsStore = defineStore("soritngs", {
 
   actions: {
     async setPause(ms = 100) {
-      this.isPaused = true;
-      await new Promise<void>((resolve) =>
-        setTimeout(resolve, ms / this.sortingSpeed)
+      const { speed } = useMainStore();
+      this.pause = new Promise<void>((resolve) =>
+        setTimeout(resolve, ms / speed)
       );
-      this.isPaused = false;
     },
     startSorting() {
       this.$reset();
       this.isActive = true;
     },
     async stopSorting() {
-      while (this.isPaused) {
-        await new Promise<void>((resolve) => setTimeout(resolve, 1));
-      }
+      if (this.pause) await this.pause;
       this.$reset();
     },
 
-    async afterSuccessSorting() {
-      const { length } = useMainStore();
-      this.$reset();
+    async afterSuccessSorting(arr: number[]) {
+      await this.stopSorting();
 
-      for (let index = 0; index < length; index++) {
-        this.sortedElements[index] = index;
-        await this.setPause(1);
+      for (let index = 0; index < arr.length; index++) {
+        this.sortedElements.push(arr[index]);
+        this.setPause(100);
+        await this.pause;
       }
     },
 
     async bubbleSort(array: ArrayItem[], length: number) {
-      const mainStore = useMainStore();
+      const { setArray } = useMainStore();
       this.startSorting();
 
       for (let step = 0; step < length - 1; step++) {
-        for (
-          let compareIndex = 0;
-          compareIndex < length - 1 - step;
-          compareIndex++
-        ) {
+        const lastIndex = length - 1 - step;
+        for (let compareIndex = 0; compareIndex < lastIndex; compareIndex++) {
           if (!this.isActive) return;
           // добавляем задержку для восприятия анимации
-          await this.setPause();
+          this.setPause();
+          await this.pause;
+          if (!this.isActive) return;
 
           const left = array[compareIndex];
           const right = array[compareIndex + 1];
@@ -67,18 +63,20 @@ export const useSortingsStore = defineStore("soritngs", {
             array[compareIndex + 1] = left;
 
             // изменяем состояние массива в хранилище путём перестановки элементов
-            mainStore.setArray(array);
+            setArray(array);
 
             // добавляем задержку для восприятия анимации
-            await this.setPause();
+            this.setPause();
+            await this.pause;
           }
         }
-
+        this.activeElements = [];
         // в конце цикла сравнений добавляем новый элемент в список
-        this.sortedElements.push(array[length - 1 - step].id);
+        this.sortedElements.push(array[lastIndex].id);
       }
+      this.sortedElements.push(array[0].id);
 
-      this.afterSuccessSorting();
+      this.afterSuccessSorting(this.sortedElements);
     },
   },
 

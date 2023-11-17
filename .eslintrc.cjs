@@ -21,6 +21,7 @@ module.exports = {
     "id-length": [2, { exceptions: ["i", "j", "_"] }],
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "_" }],
     "vue/multi-word-component-names": ["error", { ignores: ["index"] }],
+    "security/detect-object-injection": "off",
   },
   globals: {
     defineProps: "readonly",

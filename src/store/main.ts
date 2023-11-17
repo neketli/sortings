@@ -6,6 +6,7 @@ export const useMainStore = defineStore("main", {
   state: () => ({
     array: [] as ArrayItem[],
     length: 10,
+    speed: 1,
   }),
 
   actions: {
