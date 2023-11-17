@@ -11,10 +11,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export default defineConfig({
-  base:
-    process.env.NODE_ENV === "production"
-      ? "https://neketli.github.io/sortings"
-      : "/",
+  base: process.env.NODE_ENV === "production" ? "/sortings/" : "/",
   plugins: [
     vue(),
     AutoImport({
