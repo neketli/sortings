@@ -15,17 +15,17 @@ const sortedElements = computed(() => store.sortedElements);
 const activeElements = computed(() => store.activeElements);
 const additionalElements = computed(() => store.additionalElements);
 
-const getColor = ({ id }: ArrayItem) => {
+const getClass = ({ id }: ArrayItem) => {
   const colors = {
-    active: "orange-400",
-    sorted: "green-400",
-    additional: "red-400",
-    default: "green-200",
+    active: "bg-orange-400",
+    sorted: "bg-green-400",
+    additional: "bg-red-400",
+    default: "bg-green-200",
   };
 
   const status =
-    (sortedElements.value.includes(id) && "sorted") ||
     (activeElements.value.includes(id) && "active") ||
+    (sortedElements.value.includes(id) && "sorted") ||
     (additionalElements.value.includes(id) && "additional") ||
     "default";
 
@@ -42,15 +42,13 @@ const BAR_WIDTH = computed(
     ref="arrayContainer"
     class="array px-10 w-full flex gap-0.5 justify-center items-end"
   >
-    <TransitionGroup name="array">
-      <BarItem
-        v-for="item in array"
-        :key="item.value"
-        :height="item.value"
-        :width="BAR_WIDTH"
-        :color="getColor(item)"
-      />
-    </TransitionGroup>
+    <BarItem
+      v-for="item in array"
+      :key="item.id"
+      :height="item.value"
+      :width="BAR_WIDTH"
+      :class="getClass(item)"
+    />
   </div>
 </template>
 

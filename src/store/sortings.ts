@@ -4,6 +4,7 @@ import { useMainStore } from "./main";
 
 export const useSortingsStore = defineStore("soritngs", {
   state: () => ({
+    isPaused: false,
     isActive: false,
     sortingSpeed: 1,
     activeElements: [] as number[],
@@ -12,21 +13,22 @@ export const useSortingsStore = defineStore("soritngs", {
   }),
 
   actions: {
-    $reset() {
-      this.isActive = false;
-      this.sortingSpeed = 1;
-      this.activeElements = [];
-      this.sortedElements = [];
-      this.additionalElements = [];
-    },
     async setPause(ms = 100) {
+      this.isPaused = true;
       await new Promise<void>((resolve) =>
         setTimeout(resolve, ms / this.sortingSpeed)
       );
+      this.isPaused = false;
     },
     startSorting() {
       this.$reset();
       this.isActive = true;
+    },
+    async stopSorting() {
+      while (this.isPaused) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 1));
+      }
+      this.$reset();
     },
 
     async afterSuccessSorting() {
@@ -49,6 +51,7 @@ export const useSortingsStore = defineStore("soritngs", {
           compareIndex < length - 1 - step;
           compareIndex++
         ) {
+          if (!this.isActive) return;
           // добавляем задержку для восприятия анимации
           await this.setPause();
 
@@ -72,7 +75,7 @@ export const useSortingsStore = defineStore("soritngs", {
         }
 
         // в конце цикла сравнений добавляем новый элемент в список
-        this.sortedElements.push(length - 1 - step);
+        this.sortedElements.push(array[length - 1 - step].id);
       }
 
       this.afterSuccessSorting();

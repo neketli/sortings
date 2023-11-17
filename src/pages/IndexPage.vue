@@ -22,13 +22,19 @@ useHead({
 
 const length = ref(store.length);
 
-const bubbleSort = () => {
-  sortings.bubbleSort(store.array, length.value);
-
-  console.log(store.array);
+const reset = async () => {
+  await sortings.stopSorting();
+  store.setupArray();
 };
 
-watch(length, store.setupLength);
+const bubbleSort = () => {
+  sortings.bubbleSort(store.array, length.value);
+};
+
+watch(length, () => {
+  sortings.$reset();
+  store.setupLength(length.value);
+});
 
 onMounted(() => {
   store.setupArray();
@@ -42,7 +48,7 @@ onMounted(() => {
         Количество элементов
         <ElSlider v-model="length" :min="10" :max="100" show-input />
         <div class="flex gap-4 justify-between">
-          <ElButton @click="store.setupArray"> Сброс значений </ElButton>
+          <ElButton @click="reset"> Сброс значений </ElButton>
           <div class="flex gap-2">
             <ElButton @click="bubbleSort"> Сортировка пузырьком </ElButton>
           </div>
