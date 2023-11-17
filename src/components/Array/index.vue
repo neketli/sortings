@@ -40,14 +40,16 @@ const BAR_WIDTH = computed(
 <template>
   <div
     ref="arrayContainer"
-    class="array px-10 w-full flex gap-0.5 justify-center items-end"
+    class="array px-10 w-full flex gap-1 justify-center items-end"
   >
     <BarItem
       v-for="item in array"
       :key="item.id"
       :height="item.value"
       :width="BAR_WIDTH"
+      class="hover:opacity-90"
       :class="getClass(item)"
+      :title="item.value"
     />
   </div>
 </template>
