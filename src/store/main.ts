@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { createArray } from "../utils";
+import { createArray } from "@/utils";
 import { ArrayItem } from "@/types";
 
 export const useMainStore = defineStore("main", {

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ArrayItem } from "@/types";
-import { useMainStore } from "./main";
+import { useMainStore } from "@/store/main";
 
 export const useSortingsStore = defineStore("soritngs", {
   state: () => ({

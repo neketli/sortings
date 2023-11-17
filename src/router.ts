@@ -10,6 +10,13 @@ const routes = [
       title: "Sortings",
     },
   },
+  {
+    path: "/sortings/",
+    component: IndexPage,
+    meta: {
+      title: "Sortings",
+    },
+  },
 ];
 
 const router = createRouter({
