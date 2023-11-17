@@ -42,10 +42,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="relative p-4 min-h-full h-[100vh] bg-slate-800">
+  <section class="relative p-4 min-h-full h-[100vh] bg-slate-800 text-white">
     <div class="container mx-auto">
-      <div class="flex flex-col gap-2 text-xl text-white mb-4">
-        <div class="flex gap-4">
+      <h1 class="py-6 text-7xl font-bold">Sortings</h1>
+      <div class="flex flex-col gap-4 text-xl mb-4">
+        <div class="flex gap-4 flex-col md:flex-row">
           Количество элементов
           <ElSlider v-model="length" :min="10" :max="100" show-input />
           Скорость анимации
