@@ -40,7 +40,7 @@ const BAR_WIDTH = computed(
 <template>
   <div
     ref="arrayContainer"
-    class="array px-10 w-full flex gap-1 justify-center items-end"
+    class="array p-2 md:px-10 w-full flex gap-1 justify-center items-end"
   >
     <BarItem
       v-for="item in array"
