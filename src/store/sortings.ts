@@ -1,11 +1,14 @@
+/* eslint-disable id-length */
 import { defineStore } from "pinia";
 import { ArrayItem } from "@/types";
 import { useMainStore } from "@/store/main";
+import { swapElements } from "@/utils";
 
 export const useSortingsStore = defineStore("soritngs", {
   state: () => ({
     isPaused: false,
     isActive: false,
+    isSuccess: false,
     pause: null as Promise<void> | null,
     activeElements: [] as number[],
     sortedElements: [] as number[],
@@ -43,10 +46,12 @@ export const useSortingsStore = defineStore("soritngs", {
     async successSorting(arr: number[]) {
       await this.stopSorting();
 
+      this.isSuccess = true;
       for (let index = 0; index < arr.length; index++) {
         this.sortedElements.push(arr[index]);
         this.setPause(100);
         await this.pause;
+        if (!this.isSuccess) return;
       }
     },
     /**
@@ -85,27 +90,14 @@ export const useSortingsStore = defineStore("soritngs", {
       }
       this.sortedElements.push(array[0].id);
 
-      if (this.isActive) this.successSorting(this.sortedElements);
+      if (this.isActive)
+        this.successSorting([...this.sortedElements].reverse());
     },
     /**
      * Быстрая сортировка
      */
     async quickSort(array: ArrayItem[]) {
       const { setArray } = useMainStore();
-      /**
-       * Функция для перестановки местами двух элементов массива
-       */
-      const swap = (
-        items: ArrayItem[],
-        firstIndex: number,
-        secondIndex: number
-      ) => {
-        const temp = items[firstIndex];
-        items[firstIndex] = items[secondIndex];
-        items[secondIndex] = temp;
-
-        setArray(items);
-      };
 
       /**
        * Функция для разделения массива
@@ -140,7 +132,10 @@ export const useSortingsStore = defineStore("soritngs", {
 
             this.setPause();
             await this.pause;
-            swap(items, i, j);
+
+            swapElements(items, i, j);
+            setArray(items);
+
             this.setPause();
             await this.pause;
 
@@ -153,7 +148,7 @@ export const useSortingsStore = defineStore("soritngs", {
         return i;
       };
 
-      const quickSort = async (
+      const sort = async (
         items: ArrayItem[],
         leftIndex: number,
         rightIndex: number
@@ -173,22 +168,93 @@ export const useSortingsStore = defineStore("soritngs", {
 
         // рекурсивно запускаем процедуру для левой части
         if (leftIndex < index - 1) {
-          await quickSort(items, leftIndex, index - 1);
+          await sort(items, leftIndex, index - 1);
         }
 
         // рекурсивно запускаем процедуру для правой части
         if (index < rightIndex) {
-          await quickSort(items, index, rightIndex);
+          await sort(items, index, rightIndex);
         }
 
         return items;
       };
 
       this.startSorting();
-      await quickSort(array, 0, array.length - 1);
+      await sort(array, 0, array.length - 1);
       if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
-  },
 
-  getters: {},
+    /**
+     * Сортировка слиянием
+     * (Вариация с сортировкой "на месте", без выделения доп. памяти)
+     */
+    async mergeSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+
+      const merge = async (
+        items: ArrayItem[],
+        start: number,
+        mid: number,
+        end: number,
+        curr = mid + 1
+      ) => {
+        if (!this.isActive) return false;
+
+        if (items[mid].value <= items[curr].value) {
+          this.activeElements = [items[mid].id, items[curr].id];
+          return;
+        }
+
+        // Два указателя для поддержания начала  обоих массивов для слияния
+        while (this.isActive && start <= mid && curr <= end) {
+          this.activeElements = [items[start].id, items[curr].id];
+
+          // Пропускаем элементы которые стоят на своём месте
+          if (items[start].value <= items[curr].value) {
+            start++;
+            continue;
+          }
+
+          const value = items[curr];
+
+          // Смещаем все элементы между curr и start
+          for (let index = curr; index > start; index--) {
+            items[index] = items[index - 1];
+          }
+
+          items[start] = value;
+
+          this.setPause();
+          await this.pause;
+          setArray(items);
+
+          start++;
+          mid++;
+          curr++;
+        }
+        if (!this.isActive) return false;
+      };
+
+      const sort = async (items: ArrayItem[], left: number, right: number) => {
+        if (!this.isActive) return;
+        if (left < right) {
+          const mid = Math.floor((left + right) / 2);
+          // Сортируем левую часть
+          await sort(items, left, mid);
+          // Сортируем правую часть
+          await sort(items, mid + 1, right);
+
+          // Делаем слияние изменений
+          if (!(await merge(items, left, mid, right))) {
+            return;
+          }
+        }
+      };
+
+      this.startSorting();
+      const arr = [...array];
+      await sort(arr, 0, arr.length - 1);
+      if (this.isActive) this.successSorting([...arr.map(({ id }) => id)]);
+    },
+  },
 });

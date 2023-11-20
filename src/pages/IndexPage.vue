@@ -31,6 +31,11 @@ const options = [
     label: "Quick sort",
     value: () => sortings.quickSort(store.array),
   },
+  {
+    id: "merge",
+    label: "Merge sort",
+    value: () => sortings.mergeSort(store.array),
+  },
 ];
 
 const length = ref(store.length);
@@ -84,8 +89,8 @@ onMounted(() => {
           <div class="flex flex-wrap gap-2">
             <ElButton class="w-full sm:w-auto" @click="reset"> Reset </ElButton>
             <ElButton class="w-full sm:w-auto !m-0" @click="option.value">
-              Start</ElButton
-            >
+              Start
+            </ElButton>
           </div>
         </div>
       </div>
