@@ -84,8 +84,8 @@ onMounted(() => {
           <div class="flex flex-wrap gap-2">
             <ElButton class="w-full sm:w-auto" @click="reset"> Reset </ElButton>
             <ElButton class="w-full sm:w-auto !m-0" @click="option.value">
-              Start</ElButton
-            >
+              Start
+            </ElButton>
           </div>
         </div>
       </div>
