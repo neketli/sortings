@@ -31,6 +31,10 @@ const bubbleSort = () => {
   sortings.bubbleSort(store.array, length.value);
 };
 
+const quickSort = () => {
+  sortings.quickSort(store.array, length.value);
+};
+
 watch(length, () => {
   sortings.$reset();
   store.setupLength(length.value);
@@ -56,6 +60,7 @@ onMounted(() => {
           <ElButton @click="reset"> Сброс значений </ElButton>
           <div class="flex gap-2">
             <ElButton @click="bubbleSort"> Сортировка пузырьком </ElButton>
+            <ElButton @click="quickSort"> Быстрая сортировка </ElButton>
           </div>
         </div>
       </div>

@@ -28,7 +28,7 @@ export const useSortingsStore = defineStore("soritngs", {
       this.$reset();
     },
 
-    async afterSuccessSorting(arr: number[]) {
+    async successSorting(arr: number[]) {
       await this.stopSorting();
 
       for (let index = 0; index < arr.length; index++) {
@@ -49,7 +49,6 @@ export const useSortingsStore = defineStore("soritngs", {
           // добавляем задержку для восприятия анимации
           this.setPause();
           await this.pause;
-          if (!this.isActive) return;
 
           const left = array[compareIndex];
           const right = array[compareIndex + 1];
@@ -76,7 +75,101 @@ export const useSortingsStore = defineStore("soritngs", {
       }
       this.sortedElements.push(array[0].id);
 
-      this.afterSuccessSorting(this.sortedElements);
+      this.successSorting(this.sortedElements);
+    },
+
+    async quickSort(array: ArrayItem[], length: number) {
+      const { setArray } = useMainStore();
+
+      // вспомогательная функция для свапа элементов
+      const swap = (
+        items: ArrayItem[],
+        firstIndex: number,
+        secondIndex: number
+      ) => {
+        const temp = items[firstIndex];
+        items[firstIndex] = items[secondIndex];
+        items[secondIndex] = temp;
+
+        setArray(items);
+      };
+
+      // функция разделения массива
+      const partition = async (
+        items: ArrayItem[],
+        left: number,
+        right: number,
+        pivot: ArrayItem
+      ) => {
+        // указатели на левый и правый конец массива
+        let i = left;
+        let j = right;
+
+        while (i <= j) {
+          // слева-направо
+          // если элемент в левой части меньше опорного, то пропускаем его и сдвигаем указатель
+          while (items[i].value < pivot.value) {
+            i++;
+          }
+
+          // справа-налево
+          // если элемент в правой части больше опорного, то пропускаем его и сдвигаем указатель
+          while (items[j].value > pivot.value) {
+            j--;
+          }
+
+          // меняем местами элементы, если условие выполняется
+          if (i <= j) {
+            // выделяем индексы элементов в качестве активных
+            this.activeElements = [items[i].id, items[j].id];
+
+            this.setPause();
+            await this.pause;
+            swap(items, i, j);
+            this.setPause();
+            await this.pause;
+
+            i++;
+            j--;
+          }
+        }
+
+        // возвращаем индекс, по которому массив разделяется на два подмассива
+        return i;
+      };
+
+      // рекурсивная функция быстрой сортировки
+      const quickSort = async (
+        items: ArrayItem[],
+        left: number,
+        right: number
+      ) => {
+        // берём средний элемент массива как опорный
+        const pivotIndex = Math.floor((right + left) / 2);
+        const pivot = items[pivotIndex];
+
+        // выделяем опорный элемент дополнительным цветом
+        this.additionalElements = [pivot.id];
+
+        // индекс, по которому массив разделяется на два подмассива
+        const index = await partition(items, left, right, pivot);
+
+        // рекурсивно запускаем процедуру для левой части
+        if (left < index - 1) {
+          await quickSort(items, left, index - 1);
+        }
+
+        // рекурсивно запускаем процедуру для правой части
+        if (index < right) {
+          await quickSort(items, index, right);
+        }
+
+        return items;
+      };
+
+      this.startSorting();
+      await quickSort(array, 0, length - 1);
+      this.successSorting([...array.map(({ id }) => id)]);
     },
   },
 
