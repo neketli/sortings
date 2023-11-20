@@ -23,12 +23,12 @@ useHead({
 const options = [
   {
     id: "bubble",
-    label: "Сортировка пузырьком",
+    label: "Bubble sort",
     value: () => sortings.bubbleSort(store.array),
   },
   {
     id: "quick",
-    label: "Быстрая сортировка",
+    label: "Quick sort",
     value: () => sortings.quickSort(store.array),
   },
 ];
@@ -57,7 +57,7 @@ onMounted(() => {
       <h1 class="py-6 text-6xl font-bold">Sortings</h1>
       <div class="w-full flex flex-wrap justify-center gap-4 text-xl mb-4 p-2">
         <div class="w-full flex gap-2 flex-col max-w-xl">
-          <span> Количество элементов </span>
+          <span> Array length </span>
           <ElSlider
             v-model="length"
             :disabled="sortings.isActive"
@@ -65,7 +65,7 @@ onMounted(() => {
             :max="50"
             show-input
           />
-          <span> Скорость анимации</span>
+          <span> Animation speed </span>
           <ElSlider v-model="store.speed" :min="1" :max="100" show-input />
         </div>
         <div class="w-full flex justify-center flex-col sm:flex-row gap-4">
@@ -82,12 +82,10 @@ onMounted(() => {
             />
           </ElSelect>
           <div class="flex flex-wrap gap-2">
-            <ElButton class="w-full sm:w-auto" @click="reset">
-              Сброс значений
-            </ElButton>
+            <ElButton class="w-full sm:w-auto" @click="reset"> Reset </ElButton>
             <ElButton class="w-full sm:w-auto !m-0" @click="option.value">
-              Сортировать массив
-            </ElButton>
+              Start</ElButton
+            >
           </div>
         </div>
       </div>
