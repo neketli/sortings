@@ -10,6 +10,6 @@ const { height, width } = toRefs(props);
 <template>
   <div
     class="bar-item"
-    :style="{ width: `${width}px`, height: `${height}px` }"
+    :style="{ width: `${width}px`, height: `${height * 0.1}vh` }"
   />
 </template>

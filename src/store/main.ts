@@ -10,12 +10,22 @@ export const useMainStore = defineStore("main", {
   }),
 
   actions: {
+    /**
+     * Задание массива
+     */
     setArray(newArray: ArrayItem[]) {
-      this.array = this.array.map((_, idx) => newArray[idx]);
+      this.array = [...newArray];
+      //   this.array.map((_, idx) => newArray[idx]);
     },
+    /**
+     * Инициализация базового массива
+     */
     setupArray() {
       this.array = createArray(this.length);
     },
+    /**
+     * Задание длинны и инициализация массива соотв. длинны
+     */
     setupLength(length: number) {
       this.length = length;
       this.setupArray();
