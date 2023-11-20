@@ -31,6 +31,11 @@ const options = [
     label: "Quick sort",
     value: () => sortings.quickSort(store.array),
   },
+  {
+    id: "merge",
+    label: "Merge sort",
+    value: () => sortings.mergeSort(store.array),
+  },
 ];
 
 const length = ref(store.length);
