@@ -92,6 +92,74 @@ export const useSortingsStore = defineStore("soritngs", {
         this.successSorting([...this.sortedElements].reverse());
     },
     /**
+     * Сортировка перемешиванием
+     */
+    async shakerSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+      this.startSorting();
+
+      const left = {
+        index: 0,
+        swap: 0,
+        item: {} as ArrayItem,
+      };
+
+      const right = {
+        index: array.length - 1,
+        swap: array.length - 1,
+        item: {} as ArrayItem,
+      };
+
+      while (left.index < right.index) {
+        if (!this.isActive) return;
+
+        for (let index = left.index; index < right.index; index++) {
+          left.item = array[index];
+          right.item = array[index + 1];
+
+          this.activeElements = [left.item.id, right.item.id];
+          if (!this.isActive) return;
+          await this.setPause();
+
+          if (left.item.value > right.item.value) {
+            swapElements(array, index, index + 1);
+            setArray(array);
+            right.swap = index;
+          }
+        }
+        this.sortedElements.push(array[right.index].id);
+
+        if (right.swap === right.index) {
+          if (this.isActive)
+            this.successSorting([...array.map(({ id }) => id)]);
+          return true;
+        }
+
+        right.index = right.swap;
+        this.sortedElements.push(array[right.index].id);
+
+        for (let index = right.index; index > left.index; index--) {
+          left.item = array[index - 1];
+          right.item = array[index];
+
+          this.activeElements = [left.item.id, right.item.id];
+          if (!this.isActive) return;
+          await this.setPause();
+
+          if (right.item.value < left.item.value) {
+            swapElements(array, index, index - 1);
+            setArray(array);
+            left.swap = index;
+          }
+        }
+        this.sortedElements.push(array[left.index].id);
+        left.index = left.swap;
+        this.sortedElements.push(array[left.index].id);
+      }
+      this.activeElements = [];
+      if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
+    },
+    /**
      * Быстрая сортировка
      */
     async quickSort(array: ArrayItem[]) {
