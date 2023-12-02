@@ -75,8 +75,7 @@ export const useSortingsStore = defineStore("soritngs", {
           // выделяем индексы сравниваемых элементов
           this.activeElements = [left.id, right.id];
           if (left.value > right.value) {
-            array[compareIndex] = right;
-            array[compareIndex + 1] = left;
+            swapElements(array, compareIndex, compareIndex + 1);
             setArray(array);
 
             // задержка для восприятия анимации
@@ -282,10 +281,7 @@ export const useSortingsStore = defineStore("soritngs", {
           await this.setPause(100);
         }
 
-        const temp = array[index];
-        array[index] = minElement;
-        array[minIndex] = temp;
-
+        swapElements(array, index, minIndex);
         setArray(array);
 
         await this.setPause();
