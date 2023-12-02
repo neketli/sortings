@@ -25,6 +25,8 @@ export const useSortingsStore = defineStore("soritngs", {
       this.pause = new Promise<void>((resolve) =>
         setTimeout(resolve, ms / speed)
       );
+
+      return this.pause;
     },
     /**
      * Внутренний метод для отслеживания старта сортировки
@@ -49,8 +51,7 @@ export const useSortingsStore = defineStore("soritngs", {
       this.isSuccess = true;
       for (let index = 0; index < arr.length; index++) {
         this.sortedElements.push(arr[index]);
-        this.setPause(100);
-        await this.pause;
+        await this.setPause(100);
         if (!this.isSuccess) return;
       }
     },
@@ -61,12 +62,11 @@ export const useSortingsStore = defineStore("soritngs", {
       const { setArray } = useMainStore();
       this.startSorting();
 
-      for (let step = 0; step < array.length - 1; step++) {
-        const lastIndex = array.length - 1 - step;
+      for (let index = 0; index < array.length - 1; index++) {
+        const lastIndex = array.length - 1 - index;
         for (let compareIndex = 0; compareIndex < lastIndex; compareIndex++) {
           // Проверка состояния
-          this.setPause();
-          await this.pause;
+          await this.setPause();
           if (!this.isActive) return;
 
           const left = array[compareIndex];
@@ -80,8 +80,7 @@ export const useSortingsStore = defineStore("soritngs", {
             setArray(array);
 
             // задержка для восприятия анимации
-            this.setPause();
-            await this.pause;
+            await this.setPause();
           }
         }
         // после сравнений очищаем убираем активные, и добавляем элемент в список отсортированных
@@ -130,14 +129,12 @@ export const useSortingsStore = defineStore("soritngs", {
             // выделяем индексы элементов в качестве активных
             this.activeElements = [items[i].id, items[j].id];
 
-            this.setPause();
-            await this.pause;
+            await this.setPause();
 
             swapElements(items, i, j);
             setArray(items);
 
-            this.setPause();
-            await this.pause;
+            await this.setPause();
 
             i++;
             j--;
@@ -183,7 +180,6 @@ export const useSortingsStore = defineStore("soritngs", {
       await sort(array, 0, array.length - 1);
       if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
-
     /**
      * Сортировка слиянием
      * (Вариация с сортировкой "на месте", без выделения доп. памяти)
@@ -224,8 +220,7 @@ export const useSortingsStore = defineStore("soritngs", {
 
           items[start] = value;
 
-          this.setPause();
-          await this.pause;
+          await this.setPause();
           setArray(items);
 
           start++;
@@ -255,6 +250,50 @@ export const useSortingsStore = defineStore("soritngs", {
       const arr = [...array];
       await sort(arr, 0, arr.length - 1);
       if (this.isActive) this.successSorting([...arr.map(({ id }) => id)]);
+    },
+    /**
+     * Сортировка выбором
+     */
+    async selectionSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+      this.startSorting();
+
+      for (let index = 0; index < array.length; index++) {
+        if (!this.isActive) return false;
+        let minElement = array[index];
+        let minIndex = index;
+
+        for (
+          let compareIndex = index;
+          compareIndex < array.length;
+          compareIndex++
+        ) {
+          if (!this.isActive) return false;
+
+          this.activeElements = [array[minIndex].id, array[compareIndex].id];
+
+          const activeElement = array[compareIndex];
+
+          if (activeElement.value < minElement.value) {
+            minElement = activeElement;
+            minIndex = compareIndex;
+          }
+
+          await this.setPause(100);
+        }
+
+        const temp = array[index];
+        array[index] = minElement;
+        array[minIndex] = temp;
+
+        setArray(array);
+
+        await this.setPause();
+
+        this.sortedElements.push(minElement.id);
+      }
+
+      if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
   },
 });
