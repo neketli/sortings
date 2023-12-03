@@ -391,6 +391,49 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive) this.successSorting([...arr.map(({ id }) => id)]);
     },
+    /**
+     * Поразрядная сортировка
+     */
+    async radixSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+
+      // получение цифры числа на заданной позиции
+      const getDigit = (num: number, i: number) => {
+        return Math.floor(Math.abs(num) / Math.pow(10, i)) % 10;
+      };
+
+      this.startSorting();
+
+      // ищем максимальное число в массиве
+      const max = Math.max(...array.map(({ value }) => value));
+      // определяем количество его разрядов
+      const maxLength = max.toString().length;
+      let result = [...array];
+
+      // для каждого разряда
+      for (let i = 0; i < maxLength; i++) {
+        if (!this.isActive) return this.$reset();
+        //   создание корзин для поразрядной сортировки
+        const buckets: ArrayItem[][] = Array.from({ length: 10 }, () => []);
+
+        for (let j = 0; j < result.length; j++) {
+          if (!this.isActive) return this.$reset();
+          // высчитываем разряд полученного элемента массива
+          const digit = getDigit(result[j].value, i);
+
+          this.activeElements = [result[j].id];
+          await this.setPause();
+          // помещаем каждый элемент массива в соответствующий ему разряд
+          buckets[digit].push(result[j]);
+        }
+
+        //   объединяем корзины
+        result = buckets.flat();
+        setArray(result);
+      }
+
+      if (this.isActive) this.successSorting([...result.map(({ id }) => id)]);
+    },
 
     // useless sorting algorithms
 
