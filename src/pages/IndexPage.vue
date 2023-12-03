@@ -46,6 +46,12 @@ const options = [
     label: "Selection sort",
     value: () => sortings.selectionSort(store.array),
   },
+
+  {
+    id: "bogo",
+    label: "Bogo sort",
+    value: () => sortings.bogoSort(store.array),
+  },
 ];
 
 const length = ref(store.length);
