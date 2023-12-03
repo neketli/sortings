@@ -67,7 +67,7 @@ export const useSortingsStore = defineStore("soritngs", {
         for (let compareIndex = 0; compareIndex < lastIndex; compareIndex++) {
           // Проверка состояния
           await this.setPause();
-          if (!this.isActive) return;
+          if (!this.isActive) return this.$reset();
 
           const left = array[compareIndex];
           const right = array[compareIndex + 1];
@@ -98,65 +98,68 @@ export const useSortingsStore = defineStore("soritngs", {
       const { setArray } = useMainStore();
       this.startSorting();
 
-      const left = {
-        index: 0,
-        swap: 0,
-        item: {} as ArrayItem,
-      };
+      let leftIndex = 0;
+      let rightIndex = array.length - 1;
 
-      const right = {
-        index: array.length - 1,
-        swap: array.length - 1,
-        item: {} as ArrayItem,
-      };
+      let swap = true;
 
-      while (left.index < right.index) {
-        if (!this.isActive) return;
+      while (swap) {
+        if (!this.isActive) return this.$reset();
+        //   init swap flag
+        swap = false;
 
-        for (let index = left.index; index < right.index; index++) {
-          left.item = array[index];
-          right.item = array[index + 1];
+        //   loop from left to right like bubble sort
+        for (let index = leftIndex; index < rightIndex; index++) {
+          if (!this.isActive) return this.$reset();
 
-          this.activeElements = [left.item.id, right.item.id];
-          if (!this.isActive) return;
+          const left = array[index];
+          const right = array[index + 1];
+
+          this.activeElements = [left.id, right.id];
           await this.setPause();
 
-          if (left.item.value > right.item.value) {
+          if (left.value > right.value) {
             swapElements(array, index, index + 1);
             setArray(array);
-            right.swap = index;
+
+            //   mark as has swap elements
+            swap = true;
           }
         }
-        this.sortedElements.push(array[right.index].id);
 
-        if (right.swap === right.index) {
+        //   if we has no swapped elements, then array is sorted
+        if (!swap) {
           if (this.isActive)
             this.successSorting([...array.map(({ id }) => id)]);
           return true;
         }
 
-        right.index = right.swap;
-        this.sortedElements.push(array[right.index].id);
+        //   reset swap flag
+        swap = false;
+        this.sortedElements.push(array[rightIndex].id);
+        //   reducing the right index, because there is already a sorted element
+        rightIndex--;
 
-        for (let index = right.index; index > left.index; index--) {
-          left.item = array[index - 1];
-          right.item = array[index];
+        //   loop from right to left like reversed bubble sort
+        for (let index = rightIndex; index > leftIndex; index--) {
+          if (!this.isActive) return this.$reset();
 
-          this.activeElements = [left.item.id, right.item.id];
-          if (!this.isActive) return;
+          const left = array[index - 1];
+          const right = array[index];
+
+          this.activeElements = [left.id, right.id];
           await this.setPause();
 
-          if (right.item.value < left.item.value) {
+          if (right.value < left.value) {
             swapElements(array, index, index - 1);
             setArray(array);
-            left.swap = index;
+            swap = true;
           }
         }
-        this.sortedElements.push(array[left.index].id);
-        left.index = left.swap;
-        this.sortedElements.push(array[left.index].id);
+        this.sortedElements.push(array[leftIndex].id);
+        leftIndex++;
       }
-      this.activeElements = [];
+
       if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
     /**
@@ -218,7 +221,7 @@ export const useSortingsStore = defineStore("soritngs", {
         rightIndex: number
       ) => {
         // Проверка состояния
-        if (!this.isActive) return;
+        if (!this.isActive) return this.$reset();
 
         // берём средний элемент массива как опорный
         const pivotIndex = Math.floor((leftIndex + rightIndex) / 2);
@@ -298,7 +301,7 @@ export const useSortingsStore = defineStore("soritngs", {
       };
 
       const sort = async (items: ArrayItem[], left: number, right: number) => {
-        if (!this.isActive) return;
+        if (!this.isActive) return this.$reset();
         if (left < right) {
           const mid = Math.floor((left + right) / 2);
           // Сортируем левую часть
