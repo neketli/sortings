@@ -92,12 +92,18 @@ onMounted(() => {
           <ElSlider
             v-model="length"
             :disabled="sortings.isActive"
-            :min="10"
+            :min="5"
             :max="50"
             show-input
           />
           <span> Animation speed </span>
-          <ElSlider v-model="store.speed" :min="1" :max="100" show-input />
+          <ElSlider
+            v-model="store.speed"
+            :min="0.5"
+            :max="10"
+            :step="0.5"
+            show-input
+          />
         </div>
         <div class="w-full flex justify-center flex-col sm:flex-row gap-4">
           <ElSelect
@@ -114,7 +120,11 @@ onMounted(() => {
           </ElSelect>
           <div class="flex flex-wrap gap-2">
             <ElButton class="w-full sm:w-auto" @click="reset"> Reset </ElButton>
-            <ElButton class="w-full sm:w-auto !m-0" @click="option.value">
+            <ElButton
+              class="w-full sm:w-auto !m-0"
+              :disabled="sortings.isActive"
+              @click="option.value"
+            >
               Start
             </ElButton>
           </div>
