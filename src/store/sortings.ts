@@ -362,5 +362,52 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
+
+    // useless sorting algorithms
+
+    /**
+     * Болотная сортировка (BogoSort)
+     */
+    async bogoSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+
+      const isSorted = (arr: ArrayItem[]) => {
+        for (let i = 0; i < arr.length - 1; i++) {
+          if (arr[i].value > arr[i + 1].value) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      const shuffle = async (arr: ArrayItem[]) => {
+        let count = arr.length,
+          index;
+
+        while (count > 0) {
+          if (!this.isActive) return [];
+          index = Math.floor(Math.random() * count);
+          count--;
+
+          await this.setPause();
+
+          this.activeElements = [arr[index].id, arr[count].id];
+          swapElements(arr, index, count);
+        }
+
+        return arr;
+      };
+
+      this.startSorting();
+      let arr = [...array];
+      while (!isSorted(arr)) {
+        arr = await shuffle(arr);
+        setArray(arr);
+        await this.setPause();
+        if (!this.isActive) return this.$reset();
+      }
+
+      if (this.isActive) this.successSorting([...arr.map(({ id }) => id)]);
+    },
   },
 });
