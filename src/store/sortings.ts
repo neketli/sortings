@@ -67,7 +67,7 @@ export const useSortingsStore = defineStore("soritngs", {
         for (let compareIndex = 0; compareIndex < lastIndex; compareIndex++) {
           // Проверка состояния
           await this.setPause();
-          if (!this.isActive) return;
+          if (!this.isActive) return this.$reset();
 
           const left = array[compareIndex];
           const right = array[compareIndex + 1];
@@ -75,8 +75,7 @@ export const useSortingsStore = defineStore("soritngs", {
           // выделяем индексы сравниваемых элементов
           this.activeElements = [left.id, right.id];
           if (left.value > right.value) {
-            array[compareIndex] = right;
-            array[compareIndex + 1] = left;
+            swapElements(array, compareIndex, compareIndex + 1);
             setArray(array);
 
             // задержка для восприятия анимации
@@ -91,6 +90,77 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive)
         this.successSorting([...this.sortedElements].reverse());
+    },
+    /**
+     * Сортировка перемешиванием
+     */
+    async shakerSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+      this.startSorting();
+
+      let leftIndex = 0;
+      let rightIndex = array.length - 1;
+
+      let swap = true;
+
+      while (swap) {
+        if (!this.isActive) return this.$reset();
+        //   init swap flag
+        swap = false;
+
+        //   loop from left to right like bubble sort
+        for (let index = leftIndex; index < rightIndex; index++) {
+          if (!this.isActive) return this.$reset();
+
+          const left = array[index];
+          const right = array[index + 1];
+
+          this.activeElements = [left.id, right.id];
+          await this.setPause();
+
+          if (left.value > right.value) {
+            swapElements(array, index, index + 1);
+            setArray(array);
+
+            //   mark as has swap elements
+            swap = true;
+          }
+        }
+
+        //   if we has no swapped elements, then array is sorted
+        if (!swap) {
+          if (this.isActive)
+            this.successSorting([...array.map(({ id }) => id)]);
+          return true;
+        }
+
+        //   reset swap flag
+        swap = false;
+        this.sortedElements.push(array[rightIndex].id);
+        //   reducing the right index, because there is already a sorted element
+        rightIndex--;
+
+        //   loop from right to left like reversed bubble sort
+        for (let index = rightIndex; index > leftIndex; index--) {
+          if (!this.isActive) return this.$reset();
+
+          const left = array[index - 1];
+          const right = array[index];
+
+          this.activeElements = [left.id, right.id];
+          await this.setPause();
+
+          if (right.value < left.value) {
+            swapElements(array, index, index - 1);
+            setArray(array);
+            swap = true;
+          }
+        }
+        this.sortedElements.push(array[leftIndex].id);
+        leftIndex++;
+      }
+
+      if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
     /**
      * Быстрая сортировка
@@ -151,7 +221,7 @@ export const useSortingsStore = defineStore("soritngs", {
         rightIndex: number
       ) => {
         // Проверка состояния
-        if (!this.isActive) return;
+        if (!this.isActive) return this.$reset();
 
         // берём средний элемент массива как опорный
         const pivotIndex = Math.floor((leftIndex + rightIndex) / 2);
@@ -231,7 +301,7 @@ export const useSortingsStore = defineStore("soritngs", {
       };
 
       const sort = async (items: ArrayItem[], left: number, right: number) => {
-        if (!this.isActive) return;
+        if (!this.isActive) return this.$reset();
         if (left < right) {
           const mid = Math.floor((left + right) / 2);
           // Сортируем левую часть
@@ -282,10 +352,7 @@ export const useSortingsStore = defineStore("soritngs", {
           await this.setPause(100);
         }
 
-        const temp = array[index];
-        array[index] = minElement;
-        array[minIndex] = temp;
-
+        swapElements(array, index, minIndex);
         setArray(array);
 
         await this.setPause();
