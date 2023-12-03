@@ -46,6 +46,11 @@ const options = [
     label: "Selection sort",
     value: () => sortings.selectionSort(store.array),
   },
+  {
+    id: "insertion",
+    label: "Insertion sort",
+    value: () => sortings.insertionSort(store.array),
+  },
 
   {
     id: "bogo",

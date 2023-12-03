@@ -362,6 +362,35 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
+    /**
+     * Сортировка вставками
+     */
+    async insertionSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+      this.startSorting();
+
+      const arr = [...array];
+
+      for (let i = 1; i < arr.length; i++) {
+        if (!this.isActive) return this.$reset();
+
+        const current = arr[i];
+        let j;
+
+        for (j = i - 1; j >= 0 && arr[j].value > current.value; j--) {
+          this.activeElements = [arr[j].id, current.id];
+          await this.setPause();
+          arr[j + 1] = arr[j];
+
+          if (!this.isActive) return this.$reset();
+        }
+
+        arr[j + 1] = current;
+        setArray(arr);
+      }
+
+      if (this.isActive) this.successSorting([...arr.map(({ id }) => id)]);
+    },
 
     // useless sorting algorithms
 
