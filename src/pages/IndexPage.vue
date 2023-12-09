@@ -27,6 +27,11 @@ const options = [
     value: () => sortings.bubbleSort(store.array),
   },
   {
+    id: "gnome",
+    label: "Gnome sort",
+    value: () => sortings.gnomeSort(store.array),
+  },
+  {
     id: "shaker",
     label: "Shaker sort",
     value: () => sortings.shakerSort(store.array),
