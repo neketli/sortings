@@ -9,9 +9,9 @@ export const useSortingsStore = defineStore("soritngs", {
     isActive: false,
     isSuccess: false,
     pause: null as Promise<void> | null,
-    activeElements: [] as number[],
-    sortedElements: [] as number[],
-    additionalElements: [] as number[],
+    activeElements: [] as string[],
+    sortedElements: [] as string[],
+    additionalElements: [] as string[],
   }),
 
   actions: {
@@ -44,7 +44,7 @@ export const useSortingsStore = defineStore("soritngs", {
     /**
      * Внутренний метод для анимации успешной сортировки
      */
-    async successSorting(arr: number[]) {
+    async successSorting(arr: string[]) {
       await this.stopSorting();
 
       this.isSuccess = true;

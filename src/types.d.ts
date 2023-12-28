@@ -1,4 +1,4 @@
 export type ArrayItem = {
-  id: number;
+  id: string;
   value: number;
 };
