@@ -3,7 +3,7 @@ import { useSortingsStore } from "@/store/sortings";
 import { ArrayItem } from "@/types";
 
 const props = defineProps<{
-  array: { id: number; value: number }[];
+  array: ArrayItem[];
 }>();
 
 const { array } = toRefs(props);
@@ -40,6 +40,7 @@ const BAR_WIDTH = computed(
 <template>
   <div
     ref="arrayContainer"
+    v-auto-animate
     class="array p-2 md:px-10 w-full flex gap-1 justify-center items-end"
   >
     <BarItem
