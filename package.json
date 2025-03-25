@@ -1,5 +1,5 @@
 {
-  "name": "vite-ts-tailwind-starter",
+  "name": "sortings",
   "version": "4.1.0",
   "scripts": {
     "dev": "cross-env DEBUG=0 vite",
