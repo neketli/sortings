@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from "@/store/main";
 import { useSortingsStore } from "@/store/sortings";
+import { ElDrawer } from "element-plus";
 
 const route = useRoute();
 const store = useMainStore();
@@ -71,6 +72,7 @@ const options = [
 
 const length = ref(store.length);
 const option = ref(options[0]);
+const drawer = ref(false);
 
 const reset = async () => {
   await sortings.stopSorting();
@@ -132,10 +134,21 @@ onMounted(() => {
             >
               Start
             </ElButton>
+            <ElButton
+              class="w-full sm:w-auto !m-0"
+              @click="drawer = true"
+            >
+              How it works?
+            </ElButton>
           </div>
         </div>
       </div>
       <Array :array="store.array" />
+
+      <ElDrawer v-model="drawer" append-to-body size="90%" direction="btt">
+        <h2 class="text-xl mb-4 font-bold">{{ option.label }}</h2>
+        <SortingDescription :type="option.id" />
+      </ElDrawer>
     </div>
   </section>
 </template>

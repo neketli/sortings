@@ -11,5 +11,6 @@ declare module 'vue' {
     BarItem: typeof import('./components/Array/BarItem.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SortingDescription: typeof import('./components/SortingDescription.vue')['default']
   }
 }

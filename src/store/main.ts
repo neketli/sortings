@@ -16,7 +16,6 @@ export const useMainStore = defineStore("main", {
      */
     setArray(newArray: ArrayItem[]) {
       this.array = [...newArray];
-      //   this.array.map((_, idx) => newArray[idx]);
     },
     /**
      * Инициализация базового массива

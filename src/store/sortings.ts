@@ -90,6 +90,9 @@ export const useSortingsStore = defineStore("soritngs", {
       if (this.isActive)
         this.successSorting([...this.sortedElements].reverse());
     },
+    /**
+     * Гномья сортировка
+     */
     async gnomeSort(array: ArrayItem[]) {
       const { setArray } = useMainStore();
       this.startSorting();
@@ -126,10 +129,10 @@ export const useSortingsStore = defineStore("soritngs", {
 
       while (swap) {
         if (!this.isActive) return this.$reset();
-        //   init swap flag
+        // инициализация флага замены
         swap = false;
 
-        //   loop from left to right like bubble sort
+        // проход слева направо, как в пузырьковой сортировке
         for (let index = leftIndex; index < rightIndex; index++) {
           if (!this.isActive) return this.$reset();
 
@@ -143,25 +146,25 @@ export const useSortingsStore = defineStore("soritngs", {
             swapElements(array, index, index + 1);
             setArray(array);
 
-            //   mark as has swap elements
+            // флаг успешной замены
             swap = true;
           }
         }
 
-        //   if we has no swapped elements, then array is sorted
+        // проверка если замены не было значит массив отсортирован
         if (!swap) {
           if (this.isActive)
             this.successSorting([...array.map(({ id }) => id)]);
           return true;
         }
 
-        //   reset swap flag
+        // сброс флага замены
         swap = false;
         this.sortedElements.push(array[rightIndex].id);
-        //   reducing the right index, because there is already a sorted element
+        // уменьшаем правый индекс, потому что уже есть отсортированный элемент
         rightIndex--;
 
-        //   loop from right to left like reversed bubble sort
+        // проход справа налево, как в пузырьковой сортировке наоборот
         for (let index = rightIndex; index > leftIndex; index--) {
           if (!this.isActive) return this.$reset();
 
@@ -455,9 +458,6 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive) this.successSorting([...result.map(({ id }) => id)]);
     },
-
-    // useless sorting algorithms
-
     /**
      * Болотная сортировка (BogoSort)
      */

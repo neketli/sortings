@@ -15,10 +15,10 @@ This repository contains visualizations of various sorting algorithms.
 If you ever want to run this or continue development, follow these steps:
 
 ```bash
-yarn     # install dependencies
-yarn dev # run develop mode with yarn
+npm i         # install dependencies
+npm run dev   # run develop mode with yarn
 
-yarn build # build app
+npm run build # build app
 ```
 
 🧪 If you have any questions or suggestions for improvement, feel free to create an issue or make a pull request.
