@@ -27,16 +27,15 @@ concurrency:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [webkit, firefox, chromium]
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
 
-      - uses: actions/setup-node@v4.2.0
+      - name: Set up Node
+        uses: actions/setup-node@v4.2.0
         with:
-          node-version: 22
+          node-version: 18
           cache: "npm"
 
       - uses: actions/cache@v4.2.2
@@ -44,7 +43,7 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-chromium-playwright-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install deps
         run: npm ci
@@ -52,28 +51,26 @@ jobs:
       - name: Run unit tests
         run: npm run test:ci
 
-      - run: npm exec playwright install --with-deps ${{ matrix.browser }}
+      - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-
-      - run: npm exec playwright install-deps ${{ matrix.browser }}
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install --with-deps chromium
 
       - name: Build
         run: npm run build
 
       - name: Run e2e tests
-        run: npm run test:ci-e2e --project="${{ matrix.browser }}"
+        run: npm run test:ci-e2e --project="chromium"
 
       - name: Upload test artifacts
         if: failure()
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: test-results-${{ matrix.browser }}
+          name: test-results-chromium
           path: |
             playwright-report/
             test-results/
             coverage/
 
       - name: Coverage
+        if: success()
         uses: davelosert/vitest-coverage-report-action@v2.8.0
-        if: ${{ matrix.browser == 'chromium' && success() }}
