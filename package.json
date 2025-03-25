@@ -14,9 +14,11 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
     "@vueuse/head": "2.0.0",
     "element-plus": "^2.4.1",
     "pinia": "2.1.4",
+    "uuid": "^9.0.1",
     "vue": "3.3.4",
     "vue-router": "4.2.2"
   },
@@ -34,6 +36,7 @@
     "@types/jsdom": "21.1.1",
     "@types/lodash-es": "4.17.7",
     "@types/node": "20.8.3",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "6.7.0",
     "@typescript-eslint/parser": "6.7.0",
     "@vitejs/plugin-vue": "4.4.0",

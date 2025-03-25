@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 import { defineStore } from "pinia";
 import { ArrayItem } from "@/types";
 import { useMainStore } from "@/store/main";
@@ -10,9 +9,9 @@ export const useSortingsStore = defineStore("soritngs", {
     isActive: false,
     isSuccess: false,
     pause: null as Promise<void> | null,
-    activeElements: [] as number[],
-    sortedElements: [] as number[],
-    additionalElements: [] as number[],
+    activeElements: [] as string[],
+    sortedElements: [] as string[],
+    additionalElements: [] as string[],
   }),
 
   actions: {
@@ -45,7 +44,7 @@ export const useSortingsStore = defineStore("soritngs", {
     /**
      * Внутренний метод для анимации успешной сортировки
      */
-    async successSorting(arr: number[]) {
+    async successSorting(arr: string[]) {
       await this.stopSorting();
 
       this.isSuccess = true;
@@ -90,6 +89,28 @@ export const useSortingsStore = defineStore("soritngs", {
 
       if (this.isActive)
         this.successSorting([...this.sortedElements].reverse());
+    },
+    async gnomeSort(array: ArrayItem[]) {
+      const { setArray } = useMainStore();
+      this.startSorting();
+
+      let index = 0;
+      while (index < array.length) {
+        if (index == 0) index++;
+
+        this.activeElements = [array[index - 1].id, array[index].id];
+        if (array[index].value >= array[index - 1].value) index++;
+        else {
+          this.activeElements = [array[index - 1].id, array[index].id];
+          await this.setPause();
+
+          swapElements(array, index - 1, index);
+          setArray(array);
+          index--;
+        }
+      }
+
+      if (this.isActive) this.successSorting([...array.map(({ id }) => id)]);
     },
     /**
      * Сортировка перемешиванием
