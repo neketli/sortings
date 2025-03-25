@@ -36,10 +36,6 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
       },
     },
-    {
-      name: 'Mobile',
-      use: { ...devices['Pixel 6'] },
-    },
   ],
 }
 

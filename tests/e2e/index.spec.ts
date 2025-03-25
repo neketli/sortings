@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Sortings Page', () => {
+test.describe('Sortings page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
@@ -14,7 +14,7 @@ test.describe('Sortings Page', () => {
     await expect(slider).toHaveValue('10'); 
 
     await slider.fill('20');
-    await page.waitForTimeout(1000); 
+    await page.waitForTimeout(300); 
 
     const arrayItems = page.locator('.bar-item'); 
     await expect(arrayItems).toHaveCount(20);
