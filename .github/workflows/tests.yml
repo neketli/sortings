@@ -1,0 +1,79 @@
+name: Tests
+permissions:
+  contents: read
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "package-lock.json"
+      - ".github/workflows/tests.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "package-lock.json"
+      - ".github/workflows/tests.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [webkit, firefox, chromium]
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - uses: actions/setup-node@v4.2.0
+        with:
+          node-version: 22
+          cache: "npm"
+
+      - uses: actions/cache@v4.2.2
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ matrix.browser }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:ci
+
+      - run: npm exec playwright install --with-deps ${{ matrix.browser }}
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+
+      - run: npm exec playwright install-deps ${{ matrix.browser }}
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+
+      - name: Build
+        run: npm run build
+
+      - name: Run e2e tests
+        run: npm run test:ci-e2e --project="${{ matrix.browser }}"
+
+      - name: Upload test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: test-results-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            test-results/
+            coverage/
+
+      - name: Coverage
+        uses: davelosert/vitest-coverage-report-action@v2.8.0
+        if: ${{ matrix.browser == 'chromium' && success() }}
