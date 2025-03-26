@@ -7,6 +7,7 @@ dist-ssr
 /tests/e2e/screenshots/
 /instrumented
 /coverage
+/test-results
 .nyc_output
 
 # local env files

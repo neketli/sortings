@@ -16,7 +16,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Set up Node
+        uses: actions/setup-node@v4.2.0
+        with:
+          node-version: 18
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:ci
+
+      - name: Coverage
+        if: success()
+        uses: davelosert/vitest-coverage-report-action@v2.8.0
+
+      - name: Upload coverage artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
   deploy:
+    needs: [tests]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

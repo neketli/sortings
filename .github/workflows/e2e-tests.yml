@@ -1,4 +1,4 @@
-name: Tests
+name: E2ETests
 permissions:
   contents: read
   pull-requests: write
@@ -38,39 +38,23 @@ jobs:
           node-version: 18
           cache: "npm"
 
-      - uses: actions/cache@v4.2.2
-        id: playwright-cache
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          key: ${{ runner.os }}-chromium-playwright-${{ hashFiles('**/package-lock.json') }}
-
       - name: Install deps
         run: npm ci
 
-      - name: Run unit tests
-        run: npm run test:ci
-
       - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium --with-deps
 
       - name: Build
         run: npm run build
 
       - name: Run e2e tests
-        run: npm run test:ci-e2e --project="chromium"
+        run: npm run test:ci-e2e
 
       - name: Upload test artifacts
-        if: failure()
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4.4.3
         with:
-          name: test-results-chromium
-          path: |
-            playwright-report/
-            test-results/
-            coverage/
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
-      - name: Coverage
-        if: success()
-        uses: davelosert/vitest-coverage-report-action@v2.8.0

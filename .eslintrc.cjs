@@ -18,7 +18,6 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "comma-dangle": ["error", "only-multiline"],
-    "id-length": [2, { exceptions: ["i", "j", "_"] }],
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "_" }],
     "vue/multi-word-component-names": ["error", { ignores: ["index"] }],
     "security/detect-object-injection": "off",

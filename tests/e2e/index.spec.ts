@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Sortings page', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+  test.beforeEach(async ({ page, baseURL }) => {
+    await page.goto(`${baseURL}/`);
   });
 
   test('should load the page and display the title', async ({ page }) => {
